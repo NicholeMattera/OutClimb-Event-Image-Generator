@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5">
+        <title>Outclimb Event Image Generator</title>
+        <link href="/styles/main.css" rel="stylesheet">
+    </head>
+    <body>
+        <div class="container">
+            <h1>Outclimb Event Image Generator</h1>
+
+            <section class="body">
+                <div class="field">
+                    <label>Month</label>
+                    <select name="month">
+                        <option>January</option>
+                        <option>February</option>
+                        <option>March</option>
+                        <option>April</option>
+                        <option>May</option>
+                        <option>June</option>
+                        <option>July</option>
+                        <option>August</option>
+                        <option>September</option>
+                        <option>October</option>
+                        <option>November</option>
+                        <option>December</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label>Additional Information</label>
+                    <textarea name="info"></textarea>
+                </div>
+
+                <div class="field">
+                    <h2><span>Events</span><button id="add-button">+</button></h2>
+
+                    <ul id="event-list">
+                        <li>
+                            <div class="field">
+                                <label>Day</label>
+                                <input name="day" type="text" />
+                            </div>
+
+                            <div class="field">
+                                <label>Event Name</label>
+                                <input name="eventName" type="text" />
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <footer>
+                <button id="generate-button">Generate</button>
+            </footer>
+        </div>
+    </body>
+</html>

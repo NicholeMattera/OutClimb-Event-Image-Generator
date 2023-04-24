@@ -9,8 +9,13 @@ export default class FormManager {
 </div>
 
 <div class="field">
-    <label>Event Name</label>
-    <input name="eventName" type="text" />
+    <label>Name</label>
+    <input name="name" type="text" />
+</div>
+
+<div class="field">
+    <label>Description</label>
+    <input name="description" type="text" />
 </div>
 
 <div class="field">
@@ -33,11 +38,13 @@ export default class FormManager {
 
     _getData () {
         const events = [];
-        const names = document.getElementsByName('eventName');
+        const names = document.getElementsByName('name');
+        const descriptions = document.getElementsByName('description');
         document.getElementsByName('day').forEach((day, index) => {
             events.push({
                 day: day.value,
-                name: names[index].value
+                name: names[index].value,
+                description: descriptions[index].value
             });
         });
 

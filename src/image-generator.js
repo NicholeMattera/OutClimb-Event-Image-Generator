@@ -69,8 +69,11 @@ export default class ImageGenerator {
         this.context.fillText(month, monthCenterAlignX, 200 - 8, dimens.details.dayWidth);
 
         // Draw Events
-        data.events.forEach(({ day, name }, index) => {
+        data.events.forEach(({ day, name, description }, index) => {
+            this.context.font = '32px MonterratBold';
+
             const { dayWidth, headerHeight, eventGap, eventHeight } = dimens.details
+            const hasDescription = description.trim().length > 0;
 
             const backgroundY = headerHeight + (eventHeight + eventGap) * index;
             const centerAlignY = headerHeight + ((128 + 16) * index) + 75;
@@ -95,15 +98,52 @@ export default class ImageGenerator {
             this.context.fillText(day.toUpperCase(), dayCenterAlignX, centerAlignY, dayWidth);
 
             // Name text
-            const nameWidth = dimens.width - (dayWidth + 48);
-            this.context.fillText(name.toUpperCase(), dayWidth + 32, centerAlignY, nameWidth);
+            const nameDescriptionWidth = dimens.width - (dayWidth + 48);
+            this.context.fillText(name.toUpperCase(), dayWidth + 32, (hasDescription) ? centerAlignY - 16 : centerAlignY, nameDescriptionWidth);
+
+            // Description Text
+            if (hasDescription) {
+                this.context.font = '24px MonterratMedium';
+                this.context.fillText(description, dayWidth + 32, centerAlignY + 16, nameDescriptionWidth);
+            }
         });
 
         // Return context properties back to default
         this.context.fillStyle = '#000000';
     }
 
-    _drawInformation (data, dimens) {
+    _drawInformation (lines, dimens) {
+        const footerTop = dimens.details.headerHeight + dimens.details.contentHeight;
+
+        if (lines.length === 0) {
+            // TODO Draw MBP Logo in center
+        } else {
+
+            this.context.fillStyle = 'rgba(255, 255, 255, 0.8)';
+
+            // Information Background
+            this.context.beginPath();
+            this.context.roundRect(
+                dimens.details.eventGap,
+                footerTop,
+                dimens.width - dimens.details.eventGap * 2,
+                dimens.details.informationHeight,
+                8
+            );
+            this.context.fill();    
+
+            // Draw Information
+            this.context.fillStyle = '#000000';
+            this.context.font = '24px MonterratMedium';
+            lines.forEach((line, index) => {
+                this.context.fillText(
+                    line,
+                    32,
+                    footerTop + dimens.details.eventGap * 2 + 28 * index,
+                    dimens.width - dimens.details.eventGap * 4
+                );
+            });
+        }
 
         // Return context properties back to default
         this.context.fillStyle = '#000000';
@@ -114,20 +154,22 @@ export default class ImageGenerator {
         document.fonts.add(font);
     }
 
-    _getDimensions (data) {
+    _getDimensions (data, informationLines) {
         const dayWidth = 256;
         const eventGap = 16;
         const eventHeight = 128;
         const headerHeight = 200;
+        const informationHeight = (informationLines.length === 0) ? 0 : eventGap * 2 + 28 * informationLines.length
         const width = 1080;
 
         const details = {
+            contentHeight: data.events.length * (eventHeight + eventGap),
             dayWidth,
             eventGap,
             eventHeight,
-            footerHeight: 0,
-            contentHeight: data.events.length * (eventHeight + eventGap),
-            headerHeight
+            footerHeight: (informationHeight === 0) ? headerHeight - eventGap : eventGap + informationHeight, 
+            headerHeight,
+            informationHeight
         };
 
         return {
@@ -138,17 +180,40 @@ export default class ImageGenerator {
     }
 
     _generateMultilineText (text) {
+        if (text.trim().length === 0) return [];
+        this.context.font = '24px MonterratMedium';
 
+        const lines = [];
+        text.split('\n').forEach((line) => {
+            let workingLine = [];
+            line.split(' ').forEach((word) => {
+                const lineDimens = this.context.measureText(workingLine.join(' ') + ' ' + word);
+                if (lineDimens.width > 1016) {
+                    lines.push(workingLine.join(' '));
+                    workingLine = [];
+                }
+                
+                workingLine.push(word);
+            });
+
+            if (workingLine.length > 0) {
+                lines.push(workingLine.join(' '));
+            }
+        });
+
+        return lines;
     }
 
     generate (data) {
-        const dimens = this._getDimensions(data);
+        const informationLines = this._generateMultilineText(data.info);
+
+        const dimens = this._getDimensions(data, informationLines);
         this.canvas.width = dimens.width;
         this.canvas.height = dimens.height;
 
         this._drawBackground(dimens);
         this._drawEvents(data, dimens);
-        this._drawInformation(data, dimens);
+        this._drawInformation(informationLines, dimens);
 
         return this.canvas.toDataURL('image/png');
     }

@@ -12,16 +12,16 @@ export default class ImageGenerator {
         ];
 
         // Load Fonts
-        this.montserratBold = new FontFace('MonterratBold', 'url(/fonts/montserrat-bold.ttf)');
+        this.montserratBold = new FontFace('MonterratBold', 'url(fonts/montserrat-bold.ttf)');
         this.montserratBold.load().then(this._fontLoaded);
-        this.montserratMedium = new FontFace('MonterratMedium', 'url(/fonts/montserrat-medium.ttf)');
+        this.montserratMedium = new FontFace('MonterratMedium', 'url(fonts/montserrat-medium.ttf)');
         this.montserratMedium.load().then(this._fontLoaded);
 
         // Load Images
         this.backgroundImage = new Image();
-        this.backgroundImage.src = '/images/background.webp';
+        this.backgroundImage.src = 'images/background.webp';
         this.logoImage = new Image();
-        this.logoImage.src = '/images/logo.webp';
+        this.logoImage.src = 'images/logo.webp';
     }
 
     _drawBackground (dimens) {

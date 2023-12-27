@@ -1,19 +1,20 @@
 {
-  "author": "Nichole Mattera",
-  "description": "Tool for generating event images for Social Media",
-  "devDependencies": {
-    "vite": "^4.3.1",
-    "vite-plugin-html": "^3.2.0"
-  },
-  "license": "ISC",
   "name": "outclimb-event-image-generator",
+  "description": "Tool for generating event images for Social Media",
+  "license": "ISC",
+  "private": true,
+  "version": "1.0.0",
+  "author": "Nichole Mattera <me@nicholemattera.gay> (https://nicholemattera.gay)",
   "repository": {
     "type": "git",
-    "url": "git@git.nicholemattera.com:NicholeMattera/Outclimb-Event-Image-Generator.git"
+    "url": "git@github.com:OutClimb/Event-Image-Generator.git"
   },
   "scripts": {
     "build": "vite build",
     "start": "vite"
   },
-  "version": "1.0.0"
+  "devDependencies": {
+    "vite": "^4.3.1",
+    "vite-plugin-html": "^3.2.0"
+  }
 }

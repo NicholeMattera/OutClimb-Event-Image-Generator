@@ -14,7 +14,7 @@
     "start": "vite"
   },
   "devDependencies": {
-    "vite": "^5.0.10",
-    "vite-plugin-html": "^3.2.1"
+    "vite": "^5.0.12",
+    "vite-plugin-html": "^3.2.2"
   }
 }

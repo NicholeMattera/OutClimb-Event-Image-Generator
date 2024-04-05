@@ -66,14 +66,15 @@ export default class ImageGenerator {
         const month = data.month.toUpperCase();
         const monthDimens = this.context.measureText(month);
         const monthCenterAlignX = (dimens.details.dayWidth - monthDimens.width) / 2;
-        this.context.fillText(month, monthCenterAlignX, 200 - 8, dimens.details.dayWidth);
+        this.context.fillText(month, monthCenterAlignX, dimens.details.headerHeight - dimens.details.eventGap, dimens.details.dayWidth);
 
         // Draw Events
-        data.events.forEach(({ day, name, description }, index) => {
+        let detailsNum = 1;
+        data.events.forEach(({ day, name, location, details }, index) => {
             this.context.font = '32px MonterratBold';
 
             const { dayWidth, headerHeight, eventGap, eventHeight } = dimens.details
-            const hasDescription = description.trim().length > 0;
+            const hasLocation = location.trim().length > 0;
 
             const backgroundY = headerHeight + (eventHeight + eventGap) * index;
             const centerAlignY = headerHeight + ((128 + 16) * index) + 75;
@@ -98,13 +99,29 @@ export default class ImageGenerator {
             this.context.fillText(day.toUpperCase(), dayCenterAlignX, centerAlignY, dayWidth);
 
             // Name text
-            const nameDescriptionWidth = dimens.width - (dayWidth + 48);
-            this.context.fillText(name.toUpperCase(), dayWidth + 32, (hasDescription) ? centerAlignY - 16 : centerAlignY, nameDescriptionWidth);
+            const nameLocationWidth = dimens.width - (dayWidth + 48);
+            this.context.fillText(name.toUpperCase(), dayWidth + 32, (hasLocation) ? centerAlignY - 16 : centerAlignY, nameLocationWidth);
 
-            // Description Text
-            if (hasDescription) {
+            // Details Number
+            if (details.trim().length > 0) {
+                const nameDimens = this.context.measureText(name.toUpperCase());
+
+                this.context.font = '16px MonterratMedium';
+                let detailsNumX = dayWidth + 40 + nameDimens.width;
+                if (detailsNumX > dimens.width - 32) {
+                    const detailsNumDimens = this.context.measureText(detailsNum.toString());
+                    detailsNumX = dimens.width - detailsNumDimens.width - 8;
+                }
+
+                this.context.fillText(detailsNum.toString(), detailsNumX, (hasLocation) ? centerAlignY - 28 : centerAlignY - 12);
+
+                detailsNum++;
+            }
+
+            // Location Text
+            if (hasLocation) {
                 this.context.font = '24px MonterratMedium';
-                this.context.fillText(description, dayWidth + 32, centerAlignY + 16, nameDescriptionWidth);
+                this.context.fillText(location, dayWidth + 32, centerAlignY + 16, nameLocationWidth);
             }
         });
 
@@ -115,10 +132,7 @@ export default class ImageGenerator {
     _drawInformation (lines, dimens) {
         const footerTop = dimens.details.headerHeight + dimens.details.contentHeight;
 
-        if (lines.length === 0) {
-            // TODO Draw MBP Logo in center
-        } else {
-
+        if (lines.length !== 0) {
             this.context.fillStyle = 'rgba(255, 255, 255, 0.8)';
 
             // Information Background
@@ -135,11 +149,12 @@ export default class ImageGenerator {
             // Draw Information
             this.context.fillStyle = '#000000';
             this.context.font = '24px MonterratMedium';
+            this.context.textBaseline = 'top';
             lines.forEach((line, index) => {
                 this.context.fillText(
                     line,
                     32,
-                    footerTop + dimens.details.eventGap * 2 + 28 * index,
+                    footerTop + dimens.details.eventGap + 28 * index,
                     dimens.width - dimens.details.eventGap * 4
                 );
             });
@@ -148,6 +163,7 @@ export default class ImageGenerator {
         // Return context properties back to default
         this.context.fillStyle = '#000000';
         this.context.filter = 'none';
+        this.context.textBaseline = 'alphabetic';
     }
 
     _fontLoaded (font) {
@@ -167,7 +183,7 @@ export default class ImageGenerator {
             dayWidth,
             eventGap,
             eventHeight,
-            footerHeight: (informationHeight === 0) ? headerHeight - eventGap : eventGap + informationHeight, 
+            footerHeight: (informationLines.length === 0) ? headerHeight - eventGap : eventGap + informationHeight, // TODO: There maybe something here
             headerHeight,
             informationHeight
         };
@@ -179,16 +195,15 @@ export default class ImageGenerator {
         }
     }
 
-    _generateMultilineText (text) {
-        if (text.trim().length === 0) return [];
+    _generateMultilineText (topDetails, events, bottomDetails) {
         this.context.font = '24px MonterratMedium';
 
         const lines = [];
-        text.split('\n').forEach((line) => {
+        const lineFunction = (line) => {
             let workingLine = [];
             line.split(' ').forEach((word) => {
                 const lineDimens = this.context.measureText(workingLine.join(' ') + ' ' + word);
-                if (lineDimens.width > 1016) {
+                if (lineDimens.width > 1016) { 
                     lines.push(workingLine.join(' '));
                     workingLine = [];
                 }
@@ -199,13 +214,30 @@ export default class ImageGenerator {
             if (workingLine.length > 0) {
                 lines.push(workingLine.join(' '));
             }
+        };
+
+        const topLines = topDetails.split('\n');
+        const bottomLines = bottomDetails.split('\n');
+
+        topLines.forEach(lineFunction);
+
+        let detailsNum = 1;
+        events.forEach(({ details }) => {
+            if (details.trim().length === 0) return;
+
+            if (lines.length > 0) lines.push([]);
+            `${detailsNum}. ${details}`.trim().split('\n').forEach(lineFunction);
+            detailsNum++;
         });
+
+        if (lines.length > 0 && bottomDetails.length > 0) lines.push([]);
+        bottomLines.forEach(lineFunction);
 
         return lines;
     }
 
     generate (data) {
-        const informationLines = this._generateMultilineText(data.info);
+        const informationLines = this._generateMultilineText(data.topDetails, data.events, data.bottomDetails);
 
         const dimens = this._getDimensions(data, informationLines);
         this.canvas.width = dimens.width;

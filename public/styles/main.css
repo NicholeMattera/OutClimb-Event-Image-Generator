@@ -32,9 +32,25 @@ button:active {
     background: #424242;
 }
 
+button.primary {
+    border: 1px solid #673AB7;
+    background: #7E57C2;
+    color: #FAFAFA;
+}
+
+button.primary:hover {
+    border: 1px solid #311B92;
+}
+
+button.primary:active {
+    border: 1px solid #311B92;
+    background: #5E35B1;
+}
+
 .container {
     background: #424242;
     border-radius: 5px;
+    max-width: 640px;
 }
 
 .container h1 {
@@ -87,11 +103,8 @@ ul li {
     padding: 16px;
 }
 
-ul li input {
-    width: 100%;
-}
-
-ul li button {
+ul li input, ul li select, ul li button {
+    box-sizing: border-box;
     width: 100%;
 }
 

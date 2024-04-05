@@ -4,17 +4,17 @@
   "license": "ISC",
   "private": true,
   "version": "1.0.0",
-  "author": "Nichole Mattera <me@nicholemattera.gay> (https://nicholemattera.gay)",
+  "author": "Nickel Mattera <me@nicholemattera.gay> (https://nicholemattera.gay)",
   "repository": {
     "type": "git",
-    "url": "git@github.com:OutClimb/Event-Image-Generator.git"
+    "url": "git@github.com:NicholeMattera/OutClimb-Event-Image-Generator.git"
   },
   "scripts": {
     "build": "vite build",
     "start": "vite"
   },
   "devDependencies": {
-    "vite": "^5.0.12",
+    "vite": "^5.2.8",
     "vite-plugin-html": "^3.2.2"
   }
 }

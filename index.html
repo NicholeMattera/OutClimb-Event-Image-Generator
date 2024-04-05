@@ -3,56 +3,64 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5">
-        <title>Outclimb Event Image Generator</title>
+        <title>OutClimb Event Image Generator</title>
         <link href="styles/main.css" rel="stylesheet">
     </head>
     <body>
         <div class="container">
-            <h1>Outclimb Event Image Generator</h1>
+            <div class="sidebar">
+                <header>
+                    <h1>OutClimb Event Image Generator</h1>                    
+                </header>
 
-            <section class="body">
-                <div class="field">
-                    <label>Month</label>
-                    <select name="month">
-                        <option>January</option>
-                        <option>February</option>
-                        <option>March</option>
-                        <option>April</option>
-                        <option>May</option>
-                        <option>June</option>
-                        <option>July</option>
-                        <option>August</option>
-                        <option>September</option>
-                        <option>October</option>
-                        <option>November</option>
-                        <option>December</option>
-                    </select>
-                </div>
+                <section class="body">
+                    <div class="field">
+                        <label>Month</label>
+                        <select name="month">
+                            <option>January</option>
+                            <option>February</option>
+                            <option>March</option>
+                            <option>April</option>
+                            <option>May</option>
+                            <option>June</option>
+                            <option>July</option>
+                            <option>August</option>
+                            <option>September</option>
+                            <option>October</option>
+                            <option>November</option>
+                            <option>December</option>
+                        </select>
+                    </div>
+    
+                    <div class="field">
+                        <h2><span>Events</span><button id="add-button">+</button></h2>
+    
+                        <ul id="event-list"></ul>
+                    </div>
+    
+                    <h2>Details</h2>
+    
+                    <div class="field">
+                        <label>Prefix</label>
+                        <textarea name="top-details">OutClimb is a Minneapolis-based organization dedicated to making climbing accessible to as many trans and queer people as possible.</textarea>
+                    </div>
+    
+                    <p>Each individual event detail will go inbetween these lines with their appropriate number prefixed to it.</p>
+    
+                    <div class="field">
+                        <label>Suffix</label>
+                        <textarea name="bottom-details">Go to outclimb.gay to find discount information, event details, links to our social media, and more!</textarea>
+                    </div>
+                </section>
+    
+                <footer>
+                    <button id="generate-button" class="primary">Download</button>
+                </footer>
+            </div>
 
-                <div class="field">
-                    <h2><span>Events</span><button id="add-button">+</button></h2>
-
-                    <ul id="event-list"></ul>
-                </div>
-
-                <h2>Details</h2>
-
-                <div class="field">
-                    <label>Prefix</label>
-                    <textarea name="top-details">OutClimb is a Minneapolis-based organization dedicated to making climbing accessible to as many trans and queer people as possible.</textarea>
-                </div>
-
-                <p>Each individual event detail will go inbetween these lines with their appropriate number prefixed to it.</p>
-
-                <div class="field">
-                    <label>Suffix</label>
-                    <textarea name="bottom-details">Go to outclimb.gay to find discount information, event details, links to our social media, and more!</textarea>
-                </div>
-            </section>
-
-            <footer>
-                <button id="generate-button" class="primary">Generate</button>
-            </footer>
+            <div class="preview">
+                <canvas id="preview-canvas"></canvas>
+            </div>
         </div>
 
         <template id="event-item">

@@ -1,6 +1,9 @@
 export default class ImageGenerator {
-    constructor () {
-        this.canvas = document.createElement('canvas');
+    constructor (onLoadCallback) {
+        this.onLoadCallback = onLoadCallback;
+
+        // Initialization
+        this.canvas = document.querySelector('#preview-canvas');
         this.context = this.canvas.getContext('2d');
         this.rainbowGradient = [
             { offset: 0, color: '#E60000' },
@@ -10,18 +13,40 @@ export default class ImageGenerator {
             { offset: 0.8, color: '#004BFF' },
             { offset: 1, color: '#770089' }
         ];
+        this.loadMap = {
+            backgroundImage: false,
+            boldFont: false,
+            mediumFont: false,
+            logoImage: false
+        };
 
         // Load Fonts
         this.montserratBold = new FontFace('MonterratBold', 'url(fonts/montserrat-bold.ttf)');
-        this.montserratBold.load().then(this._fontLoaded);
+        this.montserratBold.load().then(this._assetLoaded('boldFont', 'font').bind(this));
         this.montserratMedium = new FontFace('MonterratMedium', 'url(fonts/montserrat-medium.ttf)');
-        this.montserratMedium.load().then(this._fontLoaded);
+        this.montserratMedium.load().then(this._assetLoaded('mediumFont', 'font').bind(this));
 
         // Load Images
         this.backgroundImage = new Image();
+        this.backgroundImage.addEventListener('load', this._assetLoaded('backgroundImage', 'image').bind(this));
         this.backgroundImage.src = 'images/background.webp';
         this.logoImage = new Image();
+        this.logoImage.addEventListener('load', this._assetLoaded('logoImage', 'image').bind(this));
         this.logoImage.src = 'images/logo.webp';
+    }
+
+    _assetLoaded (assetName, assetType) {
+        return (asset) => {
+            this.loadMap[assetName] = true;
+
+            if (assetType === 'font') {
+                document.fonts.add(asset);
+            }
+
+            if (Object.values(this.loadMap).every((loaded) => loaded)) {
+                this.onLoadCallback();
+            }
+        }
     }
 
     _drawBackground (dimens) {
@@ -163,10 +188,6 @@ export default class ImageGenerator {
         this.context.textBaseline = 'alphabetic';
     }
 
-    _fontLoaded (font) {
-        document.fonts.add(font);
-    }
-
     _getDimensions (data, informationLines) {
         const dayWidth = 256;
         const eventGap = 16;
@@ -231,7 +252,7 @@ export default class ImageGenerator {
         return lines;
     }
 
-    generate (data) {
+    generatePreview (data) {
         const informationLines = this._generateMultilineText(data.topDetails, data.events, data.bottomDetails);
 
         const dimens = this._getDimensions(data, informationLines);
@@ -241,7 +262,9 @@ export default class ImageGenerator {
         this._drawBackground(dimens);
         this._drawEvents(data, dimens);
         this._drawInformation(informationLines, dimens);
+    }
 
+    getDownloadURL () {
         return this.canvas.toDataURL('image/png');
     }
 }

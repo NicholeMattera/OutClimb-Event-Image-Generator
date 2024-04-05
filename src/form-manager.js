@@ -6,7 +6,13 @@ export default class FormManager {
     }
 
     constructor () {
-        this.imageGenerator = new ImageGenerator();
+        this.imageGeneratorLoaded = false;
+        this.imageGenerator = new ImageGenerator(() => {
+            this.imageGeneratorLoaded = true;
+
+            // Initial Preview Draw
+            this._generatePreview();
+        });
 
         // DOM Elements
         this.addEventButton = document.querySelector('#add-button');
@@ -17,6 +23,11 @@ export default class FormManager {
         const eventItem = document.createElement('li');
         eventItem.innerHTML = FormManager.EventItemHTML;
         eventItem.removeChild(eventItem.querySelector('.field:last-child'));
+        eventItem.querySelector('select').addEventListener('change', this._generatePreview.bind(this));
+        const inputs = eventItem.querySelectorAll('input');
+        for (let i = 0; i < inputs.length; i++) {
+            inputs[i].addEventListener('input', this._generatePreview.bind(this));
+        }
         this.eventList.appendChild(eventItem);
 
         // Automatically select the next month
@@ -27,6 +38,9 @@ export default class FormManager {
         // Event Listeners
         this.addEventButton.addEventListener('click', this._onAddEventButtonClicked.bind(this));
         this.generateButton.addEventListener('click', this._onGenerateButtonClicked.bind(this));
+        document.getElementsByName('month')[0].addEventListener('change', this._generatePreview.bind(this));
+        document.getElementsByName('top-details')[0].addEventListener('input', this._generatePreview.bind(this));
+        document.getElementsByName('bottom-details')[0].addEventListener('input', this._generatePreview.bind(this));
     }
 
     _getData () {
@@ -70,19 +84,32 @@ export default class FormManager {
         };
     }
 
+    _generatePreview () {
+        if (!this.imageGeneratorLoaded) return;
+
+        this.imageGenerator.generatePreview(this._getData());
+    }
+
     _onAddEventButtonClicked () {
         const eventItem = document.createElement('li');
         eventItem.innerHTML = FormManager.EventItemHTML;
         eventItem.querySelector('button').addEventListener('click', this._onRemoveEventButtonClicked.bind(this));
+        eventItem.querySelector('select').addEventListener('change', this._generatePreview.bind(this));
+        const inputs = eventItem.querySelectorAll('input');
+        for (let i = 0; i < inputs.length; i++) {
+            inputs[i].addEventListener('input', this._generatePreview.bind(this));
+        }
         this.eventList.appendChild(eventItem);
+
+        this._generatePreview();
     }
 
     _onGenerateButtonClicked () {
         const data = this._getData();
-        const imageURL = this.imageGenerator.generate(data);
+        const imageURL = this.imageGenerator.getDownloadURL();
 
         const anchor = document.createElement('a');
-        anchor.download = `Outclimb-${data.month}-${Date.now()}.png`;
+        anchor.download = `OutClimb-${data.month}-${Date.now()}.png`;
         anchor.href = imageURL;
         anchor.click();
     }
@@ -90,5 +117,7 @@ export default class FormManager {
     _onRemoveEventButtonClicked (event) {
         const eventItem = event.target.parentElement.parentElement;
         eventItem.parentElement.removeChild(eventItem);
+
+        this._generatePreview();
     }
 }

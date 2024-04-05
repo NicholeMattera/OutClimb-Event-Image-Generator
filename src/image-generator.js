@@ -69,12 +69,11 @@ export default class ImageGenerator {
         this.context.fillText(month, monthCenterAlignX, dimens.details.headerHeight - dimens.details.eventGap, dimens.details.dayWidth);
 
         // Draw Events
-        let detailsNum = 1;
-        data.events.forEach(({ day, name, location, details }, index) => {
+        data.events.forEach(({ day, name, location, detailsNum }, index) => {
             this.context.font = '32px MonterratBold';
 
             const { dayWidth, headerHeight, eventGap, eventHeight } = dimens.details
-            const hasLocation = location.trim().length > 0;
+            const hasLocation = location.length > 0;
 
             const backgroundY = headerHeight + (eventHeight + eventGap) * index;
             const centerAlignY = headerHeight + ((128 + 16) * index) + 75;
@@ -103,7 +102,7 @@ export default class ImageGenerator {
             this.context.fillText(name.toUpperCase(), dayWidth + 32, (hasLocation) ? centerAlignY - 16 : centerAlignY, nameLocationWidth);
 
             // Details Number
-            if (details.trim().length > 0) {
+            if (detailsNum !== 0) {
                 const nameDimens = this.context.measureText(name.toUpperCase());
 
                 this.context.font = '16px MonterratMedium';
@@ -114,8 +113,6 @@ export default class ImageGenerator {
                 }
 
                 this.context.fillText(detailsNum.toString(), detailsNumX, (hasLocation) ? centerAlignY - 28 : centerAlignY - 12);
-
-                detailsNum++;
             }
 
             // Location Text
@@ -221,13 +218,11 @@ export default class ImageGenerator {
 
         topLines.forEach(lineFunction);
 
-        let detailsNum = 1;
-        events.forEach(({ details }) => {
-            if (details.trim().length === 0) return;
+        events.forEach(({ details, detailsNum }) => {
+            if (details.length === 0) return;
 
             if (lines.length > 0) lines.push([]);
-            `${detailsNum}. ${details}`.trim().split('\n').forEach(lineFunction);
-            detailsNum++;
+            `${detailsNum}. ${details}`.split('\n').forEach(lineFunction);
         });
 
         if (lines.length > 0 && bottomDetails.length > 0) lines.push([]);

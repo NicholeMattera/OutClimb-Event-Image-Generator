@@ -36,20 +36,37 @@ export default class FormManager {
         const details = document.getElementsByName('details');
         document.getElementsByName('day').forEach((day, index) => {
             events.push({
-                day: day.value,
-                name: names[index].value,
-                details: details[index].value,
-                location: locations[index].value
+                day: day.value.trim(),
+                name: names[index].value.trim(),
+                details: details[index].value.trim(),
+                detailsNum: 0,
+                location: locations[index].value.trim(),
             });
         });
 
         events.sort((a, b) => parseInt(a.day) - parseInt(b.day));
 
+        let detailsMap = {};
+        let detailsNum = 1;
+        events.forEach((event) => {
+            if (event.details.length === 0) return;
+
+            if (detailsMap[event.details]) {
+                event.detailsNum = detailsMap[event.details];
+                event.details = '';
+            } else {
+                event.detailsNum = detailsNum;
+                detailsMap[event.details] = detailsNum;
+                detailsNum++;
+            }
+        });
+        detailsMap = {};
+
         return {
             events,
             topDetails: document.getElementsByName('top-details')[0].value.trim(),
             bottomDetails: document.getElementsByName('bottom-details')[0].value.trim(),
-            month: document.getElementsByName('month')[0].value,
+            month: document.getElementsByName('month')[0].value.trim(),
         };
     }
 

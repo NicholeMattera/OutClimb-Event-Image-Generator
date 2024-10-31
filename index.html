@@ -15,8 +15,8 @@
 
                 <section class="body">
                     <div class="field">
-                        <label>Month</label>
-                        <select name="month">
+                        <label for="month">Month</label>
+                        <select id="month" name="month">
                             <option>January</option>
                             <option>February</option>
                             <option>March</option>
@@ -41,20 +41,20 @@
                     <h2>Details</h2>
     
                     <div class="field">
-                        <label>Prefix</label>
-                        <textarea name="top-details">We are Twin Cities based climbers dedicated to making climbing accessible to as many trans and queer people as possible.</textarea>
+                        <label for="prefix">Prefix</label>
+                        <textarea id="prefix" name="top-details">We are Twin Cities based climbers dedicated to making climbing accessible to as many trans and queer people as possible.</textarea>
                     </div>
     
                     <p>Each individual event detail will go inbetween these lines with their appropriate number prefixed to it.</p>
     
                     <div class="field">
-                        <label>Suffix</label>
-                        <textarea name="bottom-details">Go to outclimb.gay to find discount information, event details, links to our social media, and more!</textarea>
+                        <label for="suffix">Suffix</label>
+                        <textarea id="suffix" name="bottom-details">Go to outclimb.gay to find discount information, event details, links to our social media, and more!</textarea>
                     </div>
                 </section>
     
                 <footer>
-                    <button id="generate-button" class="primary">Download</button>
+                    <button id="generate-button" class="primary" type="submit">Download</button>
                 </footer>
             </div>
 
@@ -66,12 +66,17 @@
         <template id="event-item">
             <div class="field">
                 <label>Day</label>
-                <input name="day" type="text" />
+                <input name="day" type="number" />
             </div>
 
             <div class="field">
                 <label>Name</label>
                 <input name="name" type="text" />
+            </div>
+
+            <div class="field">
+                <label>Time</label>
+                <input name="time" type="text" />
             </div>
 
             <div class="field">
@@ -96,8 +101,14 @@
                         <option value="Interstate State Park, Taylors Falls, MN 55084">Taylors Falls, MN</option>
                         <option value="Sugar Loaf Bluff, Winona, MN 55987">Winona, MN</option>
                     </optgroup>
+                    <option value="custom">Custom</option>
                 </select>
             </div>
+
+            <div class="field" style="display: none;">
+                <label>Custom Location</label>
+                <input name="custom-location" type="text" />
+            </div> 
 
             <div class="field">
                 <label>Details</label>

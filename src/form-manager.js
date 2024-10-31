@@ -23,10 +23,14 @@ export default class FormManager {
         const eventItem = document.createElement('li');
         eventItem.innerHTML = FormManager.EventItemHTML;
         eventItem.removeChild(eventItem.querySelector('.field:last-child'));
-        eventItem.querySelector('select').addEventListener('change', this._generatePreview.bind(this));
+        eventItem.querySelector('select').id = 'event-select-field-0-0';
+        eventItem.querySelector('select').addEventListener('change', this._onLocationChange.bind(this));
+        eventItem.querySelector('select').parentElement.querySelector('label').htmlFor = 'event-select-field-0-0';
         const inputs = eventItem.querySelectorAll('input');
         for (let i = 0; i < inputs.length; i++) {
+            inputs[i].id = 'event-input-field-' + i + '-0';
             inputs[i].addEventListener('input', this._generatePreview.bind(this));
+            inputs[i].parentElement.querySelector('label').htmlFor = 'event-input-field-' + i + '-0';
         }
         this.eventList.appendChild(eventItem);
 
@@ -43,18 +47,32 @@ export default class FormManager {
         document.getElementsByName('bottom-details')[0].addEventListener('input', this._generatePreview.bind(this));
     }
 
+    _appendOrdinalSuperscript (number) {
+        if (number === '') return '';
+        if (number > 10 && number < 20) return number + 'th';
+
+        const lastDigit = number.toString().slice(-1);
+        if (lastDigit === '1') return number + 'st';
+        if (lastDigit === '2') return number + 'nd';
+        if (lastDigit === '3') return number + 'rd';
+
+        return number + 'th';
+    }
+
     _getData () {
         const events = [];
         const names = document.getElementsByName('name');
+        const times = document.getElementsByName('time');
         const locations = document.getElementsByName('location');
+        const customLocations = document.getElementsByName('custom-location');
         const details = document.getElementsByName('details');
         document.getElementsByName('day').forEach((day, index) => {
             events.push({
-                day: day.value.trim(),
-                name: names[index].value.trim(),
+                day: this._appendOrdinalSuperscript(day.value.trim()).trim(),
+                name: (names[index].value.trim()+ ' ' + times[index].value.trim()).trim(),
                 details: details[index].value.trim(),
                 detailsNum: 0,
-                location: locations[index].value.trim(),
+                location: locations[index].value === 'custom' ? customLocations[index].value.trim() : locations[index].value.trim(),
             });
         });
 
@@ -91,15 +109,36 @@ export default class FormManager {
     }
 
     _onAddEventButtonClicked () {
+        const eventItemNumber = this.eventList.children.length + 1;
         const eventItem = document.createElement('li');
         eventItem.innerHTML = FormManager.EventItemHTML;
         eventItem.querySelector('button').addEventListener('click', this._onRemoveEventButtonClicked.bind(this));
-        eventItem.querySelector('select').addEventListener('change', this._generatePreview.bind(this));
+        eventItem.querySelector('select').id = 'event-select-field-0-' + eventItemNumber;
+        eventItem.querySelector('select').addEventListener('change', this._onLocationChange.bind(this));
+        eventItem.querySelector('select').parentElement.querySelector('label').htmlFor = 'event-select-field-0-' + eventItemNumber;
         const inputs = eventItem.querySelectorAll('input');
         for (let i = 0; i < inputs.length; i++) {
+            inputs[i].id = 'event-input-field-' + i + '-' + eventItemNumber;
             inputs[i].addEventListener('input', this._generatePreview.bind(this));
+            inputs[i].parentElement.querySelector('label').htmlFor = 'event-input-field-' + i + '-' + eventItemNumber;
         }
         this.eventList.appendChild(eventItem);
+
+        this._generatePreview();
+    }
+
+    _onLocationChange (event) {
+        const selectElement = event.target;
+        const liElement = selectElement.parentElement.parentElement;
+        const fieldElement = liElement.querySelector('.field:nth-child(5)');
+        const inputElement = fieldElement.querySelector('input');
+
+        if (selectElement.value === 'custom') {
+            inputElement.value = '';
+            fieldElement.style.display = 'block';
+        } else {
+            fieldElement.style.display = 'none';
+        }
 
         this._generatePreview();
     }
